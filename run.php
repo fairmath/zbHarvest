@@ -7,7 +7,7 @@ use Phpoaipmh\Endpoint;
 use Phpoaipmh\HttpAdapter\GuzzleAdapter;
 use GuzzleHttp\Client as GuzzleClient;
 
-$zbUrl = getenv('zbMATHUrk');
+$zbUrl = getenv('zbMATHUrl');
 $metaFormat = 'oai_zbmath';
 $date = date(DateTime::ISO8601);
 
