@@ -12,7 +12,9 @@ $metaFormat = 'oai_zbmath';
 $date = date(DateTime::ISO8601);
 
 $guzzle = new GuzzleAdapter(new GuzzleClient(
-	['auth' => [getenv('zbMATHUser'), getenv('zbMATHPassword')]]));
+	['auth' => [getenv('zbMATHUser'), getenv('zbMATHPassword')],
+	'verify' => false
+	]));
 
 $myEndpoint = new Endpoint(new Client( $zbUrl,
 	$guzzle));
