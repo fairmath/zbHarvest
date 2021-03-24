@@ -7,24 +7,27 @@ use Phpoaipmh\Endpoint;
 use Phpoaipmh\HttpAdapter\GuzzleAdapter;
 use GuzzleHttp\Client as GuzzleClient;
 
-$zbUrl = getenv('zbMATHUrl');
+$zbUrl = getenv( 'zbMATHUrl' );
 $metaFormat = 'oai_zbmath';
-$date = date(DateTime::ISO8601);
+$date = date( DateTime::ISO8601 );
+$options = [];
 
-$guzzle = new GuzzleAdapter(new GuzzleClient(
-	['auth' => [getenv('zbMATHUser'), getenv('zbMATHPassword')],
-	'verify' => false
-	]));
+if ( getenv( 'zbMATHUser' ) !== false ) {
+	$options = [
+		'auth' => [ getenv( 'zbMATHUser' ), getenv( 'zbMATHPassword' ) ],
+		'verify' => false,
+	];
+}
+$guzzle = new GuzzleAdapter( new GuzzleClient( $options ) );
 
-$myEndpoint = new Endpoint(new Client( $zbUrl,
-	$guzzle));
+$myEndpoint = new Endpoint( new Client( $zbUrl, $guzzle ) );
 
 $results = $myEndpoint->listMetadataFormats();
 
 $iterator = $myEndpoint->listRecords( $metaFormat );
-echo "Total count is " . ($iterator->getTotalRecordCount() ?: 'unknown');
+echo "Total count is " . ( $iterator->getTotalRecordCount() ?: 'unknown' );
 
-$iterator = $myEndpoint->listRecords('oai_zbmath');
+$iterator = $myEndpoint->listRecords( 'oai_zbmath' );
 
 // Write the header
 echo /** @lang XML */
@@ -36,7 +39,7 @@ echo /** @lang XML */
 	<ListRecords>
 ";
 
-foreach($iterator as $rec) {
+foreach ( $iterator as $rec ) {
 	echo $rec->asXML();
 }
 
