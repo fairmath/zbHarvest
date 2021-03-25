@@ -4,6 +4,8 @@ require __DIR__ . '/vendor/autoload.php';
 
 use Phpoaipmh\Client;
 use Phpoaipmh\Endpoint;
+use Phpoaipmh\Exception\MalformedResponseException;
+use Phpoaipmh\Exception\OaipmhException;
 use Phpoaipmh\HttpAdapter\GuzzleAdapter;
 use GuzzleHttp\Client as GuzzleClient;
 
@@ -20,7 +22,32 @@ if ( getenv( 'zbMATHUser' ) !== false ) {
 }
 $guzzle = new GuzzleAdapter( new GuzzleClient( $options ) );
 
-$myEndpoint = new Endpoint( new Client( $zbUrl, $guzzle ) );
+class ErrorReportingClient extends Client {
+	protected function decodeResponse( $resp ) {
+		//Setup a SimpleXML Document
+		try {
+			$xml = @new \SimpleXMLElement( $resp );
+		}
+		catch ( \Exception $e ) {
+			throw new MalformedResponseException( sprintf( "Could not decode XML Response(%s): %s",
+				$resp, $e->getMessage() ) );
+		}
+
+		//If we get back a OAI-PMH error, throw a OaipmhException
+		if ( isset( $xml->error ) ) {
+			$code = (string)$xml->error['code'];
+			$msg = (string)$xml->error;
+
+			throw new OaipmhException( $code, $msg );
+		}
+
+		return $xml;
+	}
+
+
+}
+
+$myEndpoint = new Endpoint( new ErrorReportingClient( $zbUrl, $guzzle ) );
 
 $results = $myEndpoint->listMetadataFormats();
 
@@ -40,11 +67,7 @@ echo /** @lang XML */
 ";
 
 foreach ( $iterator as $rec ) {
-	try{
-		echo $rec->asXML();
-	} catch (Exception $exception){
-		error_log(print_r($rec, true), $exception->getMessage() );
-	}
+	echo $rec->asXML();
 }
 
 // Write the footer
