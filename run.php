@@ -40,7 +40,11 @@ echo /** @lang XML */
 ";
 
 foreach ( $iterator as $rec ) {
-	echo $rec->asXML();
+	try{
+		echo $rec->asXML();
+	} catch (Exception $exception){
+		error_log(print_r($rec, true), $exception->getMessage() );
+	}
 }
 
 // Write the footer
