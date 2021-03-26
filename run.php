@@ -5,7 +5,6 @@ require __DIR__ . '/vendor/autoload.php';
 use Phpoaipmh\Client;
 use Phpoaipmh\Endpoint;
 use Phpoaipmh\Exception\MalformedResponseException;
-use Phpoaipmh\Exception\OaipmhException;
 use Phpoaipmh\HttpAdapter\GuzzleAdapter;
 use GuzzleHttp\Client as GuzzleClient;
 
@@ -23,11 +22,12 @@ if ( getenv( 'zbMATHUser' ) !== false ) {
 $guzzle = new GuzzleAdapter( new GuzzleClient( $options ) );
 
 class ErrorReportingClient extends Client {
-	protected function decodeResponse( $resp ) {
-		try{
-			parent::decodeResponse($resp);
-		} catch (MalformedResponseException $exception){
-			error_log("MalformedResponseException: " . $resp );
+	protected function decodeResponse( $resp ): SimpleXMLElement {
+		try {
+			parent::decodeResponse( $resp );
+		}
+		catch ( MalformedResponseException $exception ) {
+			error_log( "MalformedResponseException: " . $resp );
 			throw $exception;
 		}
 	}

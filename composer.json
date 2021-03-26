@@ -1,7 +1,6 @@
 {
 	"require": {
 		"caseyamcl/phpoaipmh": "^3.0",
-		"guzzlehttp/guzzle":   "^7.0",
-		"ext-simplexml": "*"
+		"guzzlehttp/guzzle":   "^7.0"
 	}
 }
