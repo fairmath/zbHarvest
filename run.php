@@ -24,27 +24,13 @@ $guzzle = new GuzzleAdapter( new GuzzleClient( $options ) );
 
 class ErrorReportingClient extends Client {
 	protected function decodeResponse( $resp ) {
-		//Setup a SimpleXML Document
-		try {
-			$xml = @new \SimpleXMLElement( $resp );
+		try{
+			parent::decodeResponse($resp);
+		} catch (MalformedResponseException $exception){
+			error_log("MalformedResponseException: " . $resp );
+			throw $exception;
 		}
-		catch ( \Exception $e ) {
-			throw new MalformedResponseException( sprintf( "Could not decode XML Response(%s): %s",
-				$resp, $e->getMessage() ) );
-		}
-
-		//If we get back a OAI-PMH error, throw a OaipmhException
-		if ( isset( $xml->error ) ) {
-			$code = (string)$xml->error['code'];
-			$msg = (string)$xml->error;
-
-			throw new OaipmhException( $code, $msg );
-		}
-
-		return $xml;
 	}
-
-
 }
 
 $myEndpoint = new Endpoint( new ErrorReportingClient( $zbUrl, $guzzle ) );
