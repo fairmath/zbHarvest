@@ -9,7 +9,7 @@ use Phpoaipmh\HttpAdapter\GuzzleAdapter;
 use GuzzleHttp\Client as GuzzleClient;
 
 $zbUrl = getenv( 'zbMATHUrl' ) ?? 'https://zboai.formulasearchengine.com/v1/';
-$metaFormat = 'oai_zbmath';
+$metaFormat = 'oai_zb_preview';
 $date = date( DateTime::ISO8601 );
 $options = [];
 
@@ -23,7 +23,7 @@ $guzzle = new GuzzleAdapter( new GuzzleClient( $options ) );
 class ErrorReportingClient extends Client {
 	protected function decodeResponse( $resp ): SimpleXMLElement {
 		try {
-			parent::decodeResponse( $resp );
+			return parent::decodeResponse( $resp );
 		}
 		catch ( MalformedResponseException $exception ) {
 			error_log( "MalformedResponseException: " . $resp );
@@ -38,8 +38,6 @@ $results = $myEndpoint->listMetadataFormats();
 
 $iterator = $myEndpoint->listRecords( $metaFormat );
 echo "Total count is " . ( $iterator->getTotalRecordCount() ?: 'unknown' );
-
-$iterator = $myEndpoint->listRecords( 'oai_zbmath' );
 
 // Write the header
 echo /** @lang XML */
