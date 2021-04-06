@@ -8,15 +8,14 @@ use Phpoaipmh\Exception\MalformedResponseException;
 use Phpoaipmh\HttpAdapter\GuzzleAdapter;
 use GuzzleHttp\Client as GuzzleClient;
 
-$zbUrl = getenv( 'zbMATHUrl' );
+$zbUrl = getenv( 'zbMATHUrl' ) ?? 'https://zboai.formulasearchengine.com/v1/';
 $metaFormat = 'oai_zbmath';
 $date = date( DateTime::ISO8601 );
 $options = [];
 
-if ( getenv( 'zbMATHUser' ) !== false ) {
+if ( getenv( 'zbMATHApiKey' ) !== false ) {
 	$options = [
-		'auth' => [ getenv( 'zbMATHUser' ), getenv( 'zbMATHPassword' ) ],
-		'verify' => false,
+		'headers' => [ 'X-API-KEY' => getenv( 'zbMATHApiKey' ) ],
 	];
 }
 $guzzle = new GuzzleAdapter( new GuzzleClient( $options ) );
