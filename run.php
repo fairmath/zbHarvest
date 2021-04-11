@@ -9,7 +9,7 @@ use Phpoaipmh\HttpAdapter\GuzzleAdapter;
 use GuzzleHttp\Client as GuzzleClient;
 
 $zbUrl = getenv( 'zbMATHUrl' ) ?? 'https://zboai.formulasearchengine.com/v1/';
-$metaFormat = 'oai_zb_preview';
+$metaFormat = 'oai_dc';
 $date = date( DateTime::ISO8601 );
 $options = [];
 
