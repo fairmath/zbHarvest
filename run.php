@@ -9,7 +9,7 @@ use Phpoaipmh\HttpAdapter\GuzzleAdapter;
 use GuzzleHttp\Client as GuzzleClient;
 
 $zbUrl = getenv( 'zbMATHUrl' ) ?: 'https://oai.zbmath.org/v1/';
-$metaFormat = 'oai_dc';
+$metaFormat = getenv( 'zbMATHFormat' ) ?:  'oai_dc';
 $date = date( DateTime::ISO8601 );
 $options = [];
 
