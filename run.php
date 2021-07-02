@@ -9,7 +9,8 @@ use Phpoaipmh\HttpAdapter\GuzzleAdapter;
 use GuzzleHttp\Client as GuzzleClient;
 
 $zbUrl = getenv( 'zbMATHUrl' ) ?: 'https://oai.zbmath.org/v1/';
-$metaFormat = getenv( 'zbMATHFormat' ) ?:  'oai_dc';
+$metaFormat = getenv( 'zbMATHFormat' ) ?: 'oai_dc';
+$max_request = (int) getenv( 'zbMATHLimit' ) ?: 900;
 $date = date( DateTime::ISO8601 );
 $options = [];
 
@@ -49,8 +50,22 @@ echo /** @lang XML */
 	<ListRecords>
 ";
 
+$t = time();
+$request_number = 0;
 foreach ( $iterator as $rec ) {
 	echo $rec->asXML();
+	if ( time() > $t ) {
+		$t = time();
+		error_log( "{$t}: Crawl rate ({$request_number} records)/s." );
+		$request_number = 0;
+	} else {
+		$request_number ++;
+		if ( $request_number >= $max_request ) {
+			error_log( "{$t}: Rate limit penalty: Wait one second!" );
+			sleep( 1 );
+		}
+	}
+
 }
 
 // Write the footer
